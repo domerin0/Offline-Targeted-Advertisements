@@ -6,7 +6,7 @@ sys.path.append("..")
 from tinyfacerec.subspace import fisherfaces
 from tinyfacerec.util import normalize, asRowMatrix, read_images
 from tinyfacerec.visual import subplot
-
+from tinyfacerec.model import *
 
 class EnvironmentVariables:
     def __init__(self):
@@ -18,17 +18,6 @@ class EnvironmentVariables:
         self.images = []
         self.model = None
         self.prediction = 0
-        #self.readCSV()
-        
-    def readCSV(self):
-        f = open("attdb.csv", "r")
-        for line in f:
-            A = line.split("\s")
-            self.classlabel.append(A[0])
-            self.images.append(A[1])
-        f.close()
-        self.model = cv2.createEigenFaceRecognizer()
-        self.model.train(self.images, self.classlabel)
 
     def isChild(self, face):
         x, y = face.size()
@@ -62,6 +51,9 @@ class EnvironmentVariables:
             )
             numFace = len(facesFront) + len(facesProfile)
             print str(numFace)
+            for face in facesFront:
+                print "Gender something : " + str(fisher(face))
+                
             if(len(numState) < 4):
                 numState.append(numFace)
                 ratioState.append(0.5)
@@ -73,7 +65,6 @@ class EnvironmentVariables:
                 if(a >= 0.6):
                     numFace = b
                 ratio = a
-            fisher()  
             d = Decide(ratio, numFace)
             self.currentAd = d.getFilePath()
             # Draw a rectangle around the faces
@@ -90,7 +81,7 @@ class EnvironmentVariables:
         self.video_capture.release()
         cv2.destroyAllWindows()
     
-def fisher():
+def fisher(comparisonImage):
         # read images
     [X,y] = read_images("base")
     # perform a full pca
@@ -99,16 +90,27 @@ def fisher():
     import matplotlib.cm as cm
     # turn the first (at most) 16 eigenvectors into grayscale
     # images (note: eigenvectors are stored by column!)
+    try:
+        images, labels = read_csv()
+    except Exception as e:
+        print str(e)
+    #height = images[0]
+
+    #testSample = images.pop(-1)
+    #testLabel = labels.pop(-1)
+
+    model = FisherfacesModel()
+    model.compute(images, labels)
+    return model.predict(comparisonImage)
+    '''   
     E = []
     for i in xrange(min(W.shape[1], 16)):
 	    e = W[:,i].reshape(X[0].shape)
 	    E.append(normalize(e,0,255))
-    # plot them and store the plot to "python_fisherfaces_fisherfaces.pdf"
-    subplot(title="Fisherfaces AT&T Facedatabase", images=E, rows=4, cols=4, sptitle="Fisherface", colormap=cm.jet, filename="python_fisherfaces_fisherfaces.png")
-
     from tinyfacerec.subspace import project, reconstruct
 
     E = []
+    
     for i in xrange(min(W.shape[1], 16)):
 	    e = W[:,i].reshape(-1,1)
 	    P = project(e, X[0].reshape(1,-1), mu)
@@ -116,8 +118,22 @@ def fisher():
 	    # reshape and append to plots
 	    R = R.reshape(X[0].shape)
 	    E.append(normalize(R,0,255))
-    # plot them and store the plot to "python_reconstruction.pdf"
-    subplot(title="Fisherfaces Reconstruction Yale FDB", images=E, rows=4, cols=4, sptitle="Fisherface", colormap=cm.gray, filename="python_fisherfaces_reconstruction.png")
+    '''
+    
+def read_csv():
+    images, labels = [], []
+    string, line, path, classlabel = '', '', '', ''
+    f = open('attdb.csv', 'r')
+    print f
+    for line in f:
+        splitstring = line.split(';')
+        path = splitstring[0]
+        classpath = splitstring[1]
+        if(path != '' and classpath != ''):
+            images.append(cv2.imread(path, 0))
+            labels.append(int(classpath))
+    f.close()
+    return (images, labels)        
 
 def delta(someList):
     avg = reduce(lambda x,y: x+ y, someList) / len(someList)
