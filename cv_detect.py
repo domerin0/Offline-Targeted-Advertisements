@@ -51,8 +51,8 @@ class EnvironmentVariables:
             )
             numFace = len(facesFront) + len(facesProfile)
             print str(numFace)
-            for face in facesFront:
-                print "Gender something : " + str(fisher(face))
+            for (x, y, w, h) in facesFront:
+                fisher(gray[x:x+w,y:y+h])
                 
             if(len(numState) < 4):
                 numState.append(numFace)
@@ -68,8 +68,7 @@ class EnvironmentVariables:
             d = Decide(ratio, numFace)
             self.currentAd = d.getFilePath()
             # Draw a rectangle around the faces
-            for (x, y, w, h) in facesFront:
-                cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+            
 
             # Display the resulting frame
             cv2.imshow('Advertisement', cv2.imread(self.currentAd,1))
@@ -81,27 +80,34 @@ class EnvironmentVariables:
         self.video_capture.release()
         cv2.destroyAllWindows()
     
-def fisher(comparisonImage):
+def fisher(testingImage):
         # read images
     [X,y] = read_images("base")
     # perform a full pca
     [D, W, mu] = fisherfaces(asRowMatrix(X), y)
     #import colormaps
-    import matplotlib.cm as cm
-    # turn the first (at most) 16 eigenvectors into grayscale
-    # images (note: eigenvectors are stored by column!)
+
     try:
         images, labels = read_csv()
     except Exception as e:
         print str(e)
-    #height = images[0]
-
-    #testSample = images.pop(-1)
-    #testLabel = labels.pop(-1)
-
+        
+    #Resize Image
+    height = len(images[0])
+    print testingImage.shape
+    print images[0].shape
+    testingImage = cv2.resize(testingImage,images[0].shape)
+    testingImage.reshape(images[0].shape)
+    #destSize = (testSize[1],testSize[0])
+    #testingImage = cv2.resize(testingImage,destSize)
+    #testingImage.reshape()
+    #Do the science/math
     model = FisherfacesModel()
     model.compute(images, labels)
-    return model.predict(comparisonImage)
+    try:
+        return model.predict(testingImage)
+    except Exception as e:
+        print e
     '''   
     E = []
     for i in xrange(min(W.shape[1], 16)):
@@ -119,12 +125,10 @@ def fisher(comparisonImage):
 	    R = R.reshape(X[0].shape)
 	    E.append(normalize(R,0,255))
     '''
-    
 def read_csv():
     images, labels = [], []
     string, line, path, classlabel = '', '', '', ''
     f = open('attdb.csv', 'r')
-    print f
     for line in f:
         splitstring = line.split(';')
         path = splitstring[0]
