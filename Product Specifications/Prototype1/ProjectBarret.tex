@@ -1,0 +1,63 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{fullpage}
+\usepackage{booktabs}
+\usepackage{multicol}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{subfig}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{epstopdf}
+\usepackage{setspace}
+\usepackage{filecontents}
+\usepackage{pgfplots, pgfplotstable}
+\usepgfplotslibrary{statistics}
+\usepackage[left= 1in, right= 1in, top= 1in, bottom= 1in]{geometry}
+
+\title{Project Barrett}
+\author{}
+\begin{document}
+\maketitle
+\doublespace
+\newpage
+\section{Project Barrett}
+Project Barrett is the given project name for the first prototype of an offline advertisement analytics engine. It's goal is to serve two main functions:
+\begin{enumerate}
+\item[1.]
+Provide users with analytics on how many people view the advertisement at a given time, and demographics (age, gender).
+\item[2.]
+Provide a means to change the content of the currently displayed advertisement in real time, in response to changing environment characteristics. This will only be done on a dynamic display such as a TV, LED array, or other 'screen'-like device.
+\end{enumerate}
+\section{Product Components}
+Project Barrett will have four main modules:
+\begin{enumerate}
+\item[1.]
+Computer vision system. This will be a software implementation of face detection, finding gender and age of each face.
+\item[2.]
+Embedded device. This will be temporary for this prototype. The device will have to be able to communicate with our servers via wifi, and/or usb with a computer and gui application.
+\item[3.]
+Front end web page with authentication. This will be for users to view analytics, and upload images or videos to change the 'advertising package' that the pi will display. This will be our main view.
+\item[4.]
+The backend server. This will be our model and controller, which will serve our front end authentication, and provide communication between user and pi.
+\end{enumerate}
+\section{Proposed Technologies}
+The intent of this section is to provide easy to use technologies that are available off the shelf. This will help with rapid prototyping of Project Barrett. In order of product components:
+\begin{enumerate}
+\item[1.]
+Opencv. Half the code is already written, and can easily be ported over to the proposed embedded device. Optimizations will need to be made to achieve a minimum of two samples per second.
+\item[2.]
+Raspberry pi with 3d printed case. This is the easiest off the shelf device to use with an integrated low power camera. The pi will need to be modified to only boot the single application everytime at startup. The pi will need to be paired with a desktop program to upload analytics, and transfer advertising packages.
+\item[3.]
+ASP.NET, or comparable web technology (javascript, html, css). They only need to be able to communicate with our user endpoint, and our server.
+\item[4.]
+ASP.NET backend. This is to be hosted with azure. This recommendation is made because of current familiarity with the technology, and because a \$150 per month credit will be given for free to us.
+\end{enumerate}
+\section{Recommended Breakdown of Teams}
+It is recommended two teams be formed. The first being a hardware team, an the second being a software team. At least one person must maintain status with both teams to enable effective communication.
+\newline
+The hardware team would be responsible with integrating Product Component (1) with Product Component (2), and interfacing the device with the user's current computer system, and our own backend server.
+\newline
+The software team would be responsible for implementing Product Component (1), and building Product Components (3) and (4).
+\end{document}
