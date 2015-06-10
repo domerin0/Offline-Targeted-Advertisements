@@ -1,4 +1,4 @@
-# AudienceDistraction
+# Offline Targeted Advertisements
 This project is the code from YHack 2014.
 
 This project used openCV with a webcam to do face analytics on passersby, and determine the best ad to show them
